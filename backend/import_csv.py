@@ -1,11 +1,16 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
 from pathlib import Path
+import os
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 # Connect to MySQL in Docker
-DB_URI = "mysql+pymysql://mediation_user:securepassword@localhost:3306/mediation_db"
+DB_USER = os.environ.get("DB_USER", "mediation_user")
+DB_PASS = os.environ.get("DB_PASS", "securepassword")
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_NAME = os.environ.get("DB_NAME", "mediation_db")
+DB_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:3306/{DB_NAME}"
 engine = create_engine(DB_URI)
 
 # 1. Read the prepared CSV

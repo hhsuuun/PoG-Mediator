@@ -116,37 +116,7 @@ git clone <your-repository-url>
 cd PoG-Mediator
 ```
 
-### 2. Create Python Environment
-
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 3. Prepare MySQL
-
-The backend defaults to the following database configuration:
-
-```text
-DB_USER=mediation_user
-DB_PASS=securepassword
-DB_HOST=localhost
-DB_NAME=mediation_db
-```
-
-You can override these values with environment variables:
-
-```bash
-export DB_USER="mediation_user"
-export DB_PASS="securepassword"
-export DB_HOST="localhost"
-export DB_NAME="mediation_db"
-```
-
-Create a MySQL database named `mediation_db` before running the backend. `backend/App.py` will create the `case_records` table automatically through SQLAlchemy.
-
-### 4. Prepare Model Artifacts
+### 2. Prepare Model Artifacts
 
 The `ensemble_3path/` folder is required to run this project, but it is not uploaded to GitHub because the model artifacts are too large.
 
@@ -180,24 +150,47 @@ If the TAIDE classifier needs access to Hugging Face, set:
 export HF_TOKEN="your-hugging-face-token"
 ```
 
-### 5. Import Demo Data
+### 3. Build Frontend for Flask Serving
 
-```bash
-python backend/import_csv.py
-```
-
-This loads `files/demo_data.csv` into the MySQL `case_records` table and resets existing demo records.
-
-### 6. Install Frontend Dependencies
+If you want Flask to serve the React UI from `http://localhost:5001`, build the frontend before building the Docker image:
 
 ```bash
 cd frontend
 npm install
+npm run build
+cd ..
 ```
 
-### 7. Run Frontend in Development Mode
+The production build is generated at `frontend/build/`. `backend/App.py` serves this folder as the static frontend.
 
-From the `frontend/` directory:
+### 4. Run with Docker Compose
+
+Docker Compose starts both services:
+
+- `db`: MySQL 8.0 database
+- `ai_backend`: Flask backend with the AI inference stack
+
+You do not need to create MySQL manually when using Docker. The compose file creates the `mediation_db` database and user automatically.
+
+```bash
+docker compose up --build
+```
+
+The backend will be available at [http://localhost:5001](http://localhost:5001).
+
+### 5. Import Demo Data in Docker
+
+After the containers are running, import the demo data into the MySQL container:
+
+```bash
+docker compose exec ai_backend python backend/import_csv.py
+```
+
+This loads `files/demo_data.csv` into the MySQL `case_records` table and resets existing demo records.
+
+### 6. Optional: Run Frontend in Development Mode
+
+For frontend development, run React separately from the `frontend/` directory:
 
 ```bash
 npm start
@@ -205,22 +198,41 @@ npm start
 
 Open [http://localhost:3000](http://localhost:3000) in the browser. During development, `frontend/package.json` proxies API calls to `http://localhost:5001`.
 
-### 8. Build Frontend for Flask Serving
+### 7. Optional: Run Backend Locally Without Docker
 
-From the `frontend/` directory:
+Only use this path if you do not want Docker Compose to manage MySQL.
+
+Create Python environment:
 
 ```bash
-npm run build
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-The production build is generated at `frontend/build/`. `backend/App.py` serves this folder as the static frontend.
+Prepare a local MySQL database manually. The backend defaults to:
 
-### 9. Run Backend
+```text
+DB_USER=mediation_user
+DB_PASS=securepassword
+DB_HOST=localhost
+DB_NAME=mediation_db
+```
 
-From the project root:
+Then import demo data and run the backend:
 
 ```bash
+python backend/import_csv.py
 python backend/App.py
+```
+
+You can override the local database settings with environment variables:
+
+```bash
+export DB_USER="mediation_user"
+export DB_PASS="securepassword"
+export DB_HOST="localhost"
+export DB_NAME="mediation_db"
 ```
 
 The backend exposes these main API routes:
@@ -231,33 +243,6 @@ The backend exposes these main API routes:
 | `/api/predict` | POST   | Predict mediation outcome and return keywords, paths, and explanation |
 | `/api/stats`   | GET    | Return dashboard summary statistics                                   |
 | `/api/cases`   | GET    | Search and filter stored case records                                 |
-
----
-
-## Docker Setup
-
-This project includes `Dockerfile` and `docker-compose.yml` for running the Flask AI backend with MySQL.
-
-Before using Docker, download `ensemble_3path/` from Google Drive and place it in the project root:
-
-```text
-PoG-Mediator/
-└── ensemble_3path/
-```
-
-If the TAIDE classifier needs Hugging Face access, export your token before starting Docker:
-
-```bash
-export HF_TOKEN="your-hugging-face-token"
-```
-
-Then start the services:
-
-```bash
-docker compose up --build
-```
-
-The compose setup mounts `ensemble_3path/` into the container at `/app/ensemble_3path`, so the large model files are not baked into the Docker image.
 
 ---
 
