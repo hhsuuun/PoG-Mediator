@@ -87,7 +87,6 @@ PoG-Mediator/
 │   └── pog_demo.png                 # Full stack architecture figure
 ├── files/
 │   ├── demo_data.csv               # Demo historical mediation data
-│   ├── demo_ten.csv                # Small demo subset
 │   └── few_shot.csv                # Few-shot examples for keyword extraction
 ├── frontend/
 │   ├── package.json                # React dependencies and scripts
