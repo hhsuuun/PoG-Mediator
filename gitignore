@@ -1,0 +1,55 @@
+# =========================
+# 1. AI Models & GPU Caches
+# =========================
+hf_cache/
+nv_cache/
+.cache/
+*.pt
+*.pth
+*.bin
+*.onnx
+
+# =========================
+# 2. Database & Raw Data 
+# =========================
+mysql_data/
+merge.csv
+merge_en.csv
+files/*.csv
+!files/*_sample.csv
+!merge_en_sample.csv
+
+# =========================
+# 3. Python & Flask
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+env/
+.venv/
+flask_session/
+
+# =========================
+# 4. Frontend (React / Node)
+# =========================
+frontend/node_modules/
+frontend/build/
+frontend/.pnp
+frontend/.pnp.js
+frontend/coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+# =========================
+# 5. OS & Editor Logs
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

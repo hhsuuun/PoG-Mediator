@@ -1,0 +1,16 @@
+flask
+flask-cors
+pandas
+networkx
+scikit-learn
+xgboost
+joblib
+transformers
+peft
+bitsandbytes
+scipy
+accelerate
+cryptography
+Flask-SQLAlchemy==3.1.1
+PyMySQL==1.1.0
+deep-translator==1.11.4
