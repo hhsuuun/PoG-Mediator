@@ -1,12 +1,15 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 # Connect to MySQL in Docker
 DB_URI = "mysql+pymysql://mediation_user:securepassword@localhost:3306/mediation_db"
 engine = create_engine(DB_URI)
 
 # 1. Read the prepared CSV
-CSV_PATH = "files/demo_data.csv" 
+CSV_PATH = PROJECT_ROOT / "files" / "demo_data.csv"
 try:
     df_raw = pd.read_csv(CSV_PATH)
     print(f"Successfully read English CSV, total {len(df_raw)} records.")

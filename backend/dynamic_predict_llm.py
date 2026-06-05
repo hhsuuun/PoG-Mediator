@@ -21,7 +21,8 @@ from peft import PeftModel
 import subprocess
 import numpy as np
 
-MODEL_DIR = "ensemble_3path"
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_DIR = os.path.join(PROJECT_ROOT, "ensemble_3path")
 
 PT_PATH = os.path.join(MODEL_DIR, "roberta_model.pt")
 ROBERTA_ID = "hfl/chinese-roberta-wwm-ext-large"
@@ -32,9 +33,9 @@ HF_TOKEN = os.environ.get("HF_TOKEN", "")
 LORA_PATH = os.path.join(MODEL_DIR, "taide_lora")
 
 SPECIAL_TOKENS = ["[時間]", "[人名]", "[車號]", "[地點]"]
-MODEL_FILE = "ensemble_3path/taide-7b-a.2-q4_k_m.gguf"
-KG_FILE = "ensemble_3path/demo_kg.gml"
-FEW_SHOT_CSV = "files/few_shot.csv"
+MODEL_FILE = os.path.join(MODEL_DIR, "taide-7b-a.2-q4_k_m.gguf")
+KG_FILE = os.path.join(MODEL_DIR, "demo_kg.gml")
+FEW_SHOT_CSV = os.path.join(PROJECT_ROOT, "files", "few_shot.csv")
 LABEL_MAP = {0: 0, 1: 1}
 STRING_MAP = {0: "不成立", 1: "成立"}
 
@@ -574,7 +575,7 @@ def summarize_and_infer(
 if __name__ == "__main__":
     initialize()
 
-    input_file = "files/few_shot.csv"
+    input_file = FEW_SHOT_CSV
     try:
         df = pd.read_csv(input_file)
     except FileNotFoundError:

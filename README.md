@@ -18,7 +18,7 @@ PoG-Mediator is designed to make mediation prediction more interpretable by retu
 
 ## System Pipeline
 
-![PoG-Mediator prediction and Path-over-Graph pipeline](pog.png)
+![PoG-Mediator prediction and Path-over-Graph pipeline](figure/pog.png)
 
 The system receives a new mediation case, separates structured fields and textual content, predicts the mediation outcome through an ensemble model, retrieves relevant knowledge-graph paths constrained by category and keywords, and generates an explainable output.
 
@@ -26,7 +26,7 @@ The system receives a new mediation case, separates structured fields and textua
 
 ## Full Stack Overview
 
-![PoG-Mediator backend and user interface architecture](pog_demo.png)
+![PoG-Mediator backend and user interface architecture](figure/pog_demo.png)
 
 The backend handles model loading, prediction, graph retrieval, database caching, and dashboard APIs. The frontend provides a public prediction interface and a mediator-facing dashboard for historical case analysis.
 
@@ -36,10 +36,10 @@ The backend handles model loading, prediction, graph retrieval, database caching
 
 | Component          | Main File / Resource           | Purpose                                                                                  |
 | ------------------ | ------------------------------ | ---------------------------------------------------------------------------------------- |
-| Flask API          | `App.py`                     | Provides prediction, status, statistics, case search, and React static serving endpoints |
+| Flask API          | `backend/App.py`             | Provides prediction, status, statistics, case search, and React static serving endpoints |
 | Database           | MySQL + SQLAlchemy             | Stores case metadata, prediction results, keywords, explanations, and graph paths        |
-| Data Import        | `import_csv.py`              | Imports `files/demo_data.csv` into the `case_records` table                          |
-| Ensemble Inference | `dynamic_predict_llm.py`     | Loads models and combines XGBoost, RoBERTa, and TAIDE LoRA predictions                   |
+| Data Import        | `backend/import_csv.py`      | Imports `files/demo_data.csv` into the `case_records` table                          |
+| Ensemble Inference | `backend/dynamic_predict_llm.py` | Loads models and combines XGBoost, RoBERTa, and TAIDE LoRA predictions               |
 | Path-over-Graph    | `ensemble_3path/demo_kg.gml` | Retrieves related paths from the mediation knowledge graph                               |
 | Few-shot Keywords  | `files/few_shot.csv`         | Provides examples for TAIDE keyword extraction                                           |
 | Frontend           | `frontend/src/App.js`        | React interface for AI prediction and data dashboard                                     |
@@ -72,13 +72,16 @@ This project uses a LoRA adapter fine-tuned from `taide/Llama-3.1-TAIDE-LX-8B-Ch
 
 ```text
 PoG-Mediator/
-├── App.py                         # Flask backend and API routes
-├── dynamic_predict_llm.py          # AI initialization, ensemble prediction, KG retrieval
-├── import_csv.py                   # Import demo CSV data into MySQL
 ├── requirements.txt                # Python dependencies
 ├── README.md                       # Main project documentation
-├── pog.png                         # Prediction and Path-over-Graph pipeline figure
-├── pog_demo.png                    # Full stack architecture figure
+├── backend/
+│   ├── __init__.py
+│   ├── App.py                      # Flask backend and API routes
+│   ├── dynamic_predict_llm.py       # AI initialization, ensemble prediction, KG retrieval
+│   └── import_csv.py                # Import demo CSV data into MySQL
+├── figure/
+│   ├── pog.png                      # Prediction and Path-over-Graph pipeline figure
+│   └── pog_demo.png                 # Full stack architecture figure
 ├── files/
 │   ├── demo_data.csv               # Demo historical mediation data
 │   ├── demo_ten.csv                # Small demo subset
@@ -141,7 +144,7 @@ export DB_HOST="localhost"
 export DB_NAME="mediation_db"
 ```
 
-Create a MySQL database named `mediation_db` before running the backend. `App.py` will create the `case_records` table automatically through SQLAlchemy.
+Create a MySQL database named `mediation_db` before running the backend. `backend/App.py` will create the `case_records` table automatically through SQLAlchemy.
 
 ### 4. Prepare Model Artifacts
 
@@ -180,7 +183,7 @@ export HF_TOKEN="your-hugging-face-token"
 ### 5. Import Demo Data
 
 ```bash
-python import_csv.py
+python backend/import_csv.py
 ```
 
 This loads `files/demo_data.csv` into the MySQL `case_records` table and resets existing demo records.
@@ -210,14 +213,14 @@ From the `frontend/` directory:
 npm run build
 ```
 
-The production build is generated at `frontend/build/`. `App.py` serves this folder as the static frontend.
+The production build is generated at `frontend/build/`. `backend/App.py` serves this folder as the static frontend.
 
 ### 9. Run Backend
 
 From the project root:
 
 ```bash
-python App.py
+python backend/App.py
 ```
 
 The backend exposes these main API routes:
@@ -267,7 +270,7 @@ Inside `frontend/`, the available Create React App scripts are:
 
 ## Notes
 
-- `dynamic_predict_llm.py` expects model artifacts in `ensemble_3path/`. This folder is too large for GitHub and must be downloaded from [Google Drive](https://drive.google.com/drive/folders/1_JSiQccyIE4n-QUZ-8qY6jos-KtA1ucn?usp=drive_link) before running the project.
+- `backend/dynamic_predict_llm.py` expects model artifacts in `ensemble_3path/`. This folder is too large for GitHub and must be downloaded from [Google Drive](https://drive.google.com/drive/folders/1_JSiQccyIE4n-QUZ-8qY6jos-KtA1ucn?usp=drive_link) before running the project.
 - If `ensemble_3path/` is missing, the API can still start, but AI prediction quality or availability will be limited.
 - The frontend sends English category labels. The backend maps these labels to Chinese before model inference, then translates generated outputs back to English.
 - The database cache avoids recomputing AI inference when the same case content already exists in MySQL.

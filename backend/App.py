@@ -4,12 +4,17 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy 
 from sqlalchemy import func             
-import dynamic_predict_llm as dpllm
 import webbrowser
 from threading import Timer, Thread
 from deep_translator import GoogleTranslator
 
-BUILD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend", "build")
+try:
+    from . import dynamic_predict_llm as dpllm
+except ImportError:
+    import dynamic_predict_llm as dpllm
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BUILD_DIR = os.path.join(PROJECT_ROOT, "frontend", "build")
 
 EN_TO_ZH = {
     # Main categories
