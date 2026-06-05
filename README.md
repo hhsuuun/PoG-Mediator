@@ -72,6 +72,9 @@ This project uses a LoRA adapter fine-tuned from `taide/Llama-3.1-TAIDE-LX-8B-Ch
 
 ```text
 PoG-Mediator/
+├── Dockerfile                     # Docker image definition for the Flask AI backend
+├── docker-compose.yml             # Docker Compose setup for MySQL and backend services
+├── .dockerignore                  # Files excluded from Docker build context
 ├── requirements.txt                # Python dependencies
 ├── README.md                       # Main project documentation
 ├── backend/
