@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: mediation_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword   
+      MYSQL_DATABASE: mediation_db        
+      MYSQL_USER: mediation_user
+      MYSQL_PASSWORD: securepassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql            
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+
+  ai_backend:
+    build: .
+    container_name: mediation_ai_app
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    depends_on:
+      db:
+        condition: service_healthy        
+    environment:
+      - DB_HOST=db                       
+      - DB_USER=mediation_user
+      - DB_PASS=securepassword
+      - DB_NAME=mediation_db
+      - HF_TOKEN=${HF_TOKEN:-}
+    volumes:
+      - ./hf_cache:/root/.cache/huggingface
+      - ./nv_cache:/root/.nv
+      - ./ensemble_3path:/app/ensemble_3path:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia              
+              count: 1
+              capabilities: [gpu]
+
+# 宣告 Volumes
+volumes:
+  db_data:

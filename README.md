@@ -234,6 +234,33 @@ The backend exposes these main API routes:
 
 ---
 
+## Docker Setup
+
+This project includes `Dockerfile` and `docker-compose.yml` for running the Flask AI backend with MySQL.
+
+Before using Docker, download `ensemble_3path/` from Google Drive and place it in the project root:
+
+```text
+PoG-Mediator/
+└── ensemble_3path/
+```
+
+If the TAIDE classifier needs Hugging Face access, export your token before starting Docker:
+
+```bash
+export HF_TOKEN="your-hugging-face-token"
+```
+
+Then start the services:
+
+```bash
+docker compose up --build
+```
+
+The compose setup mounts `ensemble_3path/` into the container at `/app/ensemble_3path`, so the large model files are not baked into the Docker image.
+
+---
+
 ## Frontend Scripts
 
 Inside `frontend/`, the available Create React App scripts are:
