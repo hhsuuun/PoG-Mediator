@@ -28,7 +28,7 @@ ROBERTA_ID = "hfl/chinese-roberta-wwm-ext-large"
 
 # Path 3 TAIDE constants
 TAIDE_ID = "taide/Llama-3.1-TAIDE-LX-8B-Chat"
-HF_TOKEN = "hf_token"
+HF_TOKEN = os.environ.get("HF_TOKEN", "")
 LORA_PATH = os.path.join(MODEL_DIR, "taide_lora")
 
 SPECIAL_TOKENS = ["[時間]", "[人名]", "[車號]", "[地點]"]
